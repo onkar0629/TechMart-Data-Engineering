@@ -6,6 +6,7 @@ from typing import Any, Dict, List
 from faker import Faker
 
 from ..config import ORDER_COUNT
+from ..constants import SHIPMENT_STATUS_VALUES
 from ..logger import setup_logger
 from ..utils import ensure_output_dir, write_csv
 
@@ -27,7 +28,7 @@ class ShipmentGenerator:
                     "order_id": index,
                     "warehouse_id": (index % 5) + 1,
                     "tracking_number": f"TRK{index:06d}",
-                    "shipment_status": fake.random_element(elements=["Pending", "Packed", "In Transit", "Delivered", "Failed"]),
+                    "shipment_status": fake.random_element(elements=SHIPMENT_STATUS_VALUES),
                 }
             )
 

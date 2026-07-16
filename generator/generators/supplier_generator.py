@@ -6,7 +6,7 @@ from typing import Any, Dict, List
 from faker import Faker
 
 from ..config import SUPPLIER_COUNT
-from ..constants import INDIAN_CITIES, INDIAN_STATES
+from ..constants import COUNTRIES, INDIAN_CITIES, INDIAN_STATES
 from ..logger import setup_logger
 from ..utils import ensure_output_dir, generate_mobile_number, write_csv
 
@@ -31,7 +31,7 @@ class SupplierGenerator:
                     "phone": generate_mobile_number(),
                     "city": fake.random_element(elements=INDIAN_CITIES),
                     "state": fake.random_element(elements=INDIAN_STATES),
-                    "country": "India",
+                    "country": fake.random_element(elements=COUNTRIES),
                     "rating": round(fake.random.uniform(3.0, 5.0), 2),
                 }
             )

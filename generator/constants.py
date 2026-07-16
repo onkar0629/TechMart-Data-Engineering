@@ -13,6 +13,11 @@ INDIAN_STATES = [
 
 COUNTRIES = ["India"]
 
+GENDER_VALUES = ["Male", "Female", "Other", "Prefer not to say"]
+CUSTOMER_STATUS_VALUES = ["Active", "Inactive", "Suspended"]
+SHIPMENT_STATUS_VALUES = ["Pending", "Packed", "In Transit", "Delivered", "Failed"]
+RETURN_STATUS_VALUES = ["Requested", "Approved", "Rejected", "Completed"]
+
 CATEGORIES = [
     "Electronics", "Fashion", "Home Appliances", "Beauty", "Books", "Sports",
     "Furniture", "Groceries", "Toys", "Health", "Automotive", "Garden", "Office",

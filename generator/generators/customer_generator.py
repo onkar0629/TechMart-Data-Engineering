@@ -6,7 +6,7 @@ from typing import Any, Dict, List
 from faker import Faker
 
 from ..config import ADDRESS_COUNT, CUSTOMER_COUNT, START_YEAR, END_YEAR
-from ..constants import INDIAN_CITIES
+from ..constants import CUSTOMER_STATUS_VALUES, GENDER_VALUES
 from ..logger import setup_logger
 from ..utils import ensure_output_dir, generate_mobile_number, random_date, write_csv
 
@@ -29,10 +29,10 @@ class CustomerGenerator:
                     "last_name": fake.last_name(),
                     "email": fake.email(),
                     "phone": generate_mobile_number(),
-                    "gender": fake.random_element(elements=["Male", "Female", "Other", "Prefer not to say"]),
+                    "gender": fake.random_element(elements=GENDER_VALUES),
                     "date_of_birth": fake.date_of_birth(minimum_age=18, maximum_age=70).strftime("%Y-%m-%d"),
                     "registration_date": random_date(START_YEAR, END_YEAR),
-                    "status": fake.random_element(elements=["Active", "Inactive", "Suspended"]),
+                    "status": fake.random_element(elements=CUSTOMER_STATUS_VALUES),
                     "address_id": (index % ADDRESS_COUNT) + 1,
                 }
             )
