@@ -12,15 +12,9 @@ TechMart is a production-style e-commerce data engineering portfolio project des
 
 ## Repository Structure
 
-- docs/ - architecture, requirements, and dictionary documents
 - database/ - MySQL schema and database objects
-- generator/ - modular synthetic data generation scripts
-- datasets/ - raw and cleaned datasets
-- sql/ - SQL practice exercises by topic
-- python/ - Python-based analytics utilities
-- pyspark/ - PySpark processing examples
-- azure/ - Azure integration notes and templates
-- powerbi/ - Power BI modeling and dashboard assets
+- generator/ - modular synthetic data generation framework
+- generator/output/ - generated CSV datasets
 
 ## Tech Stack
 
@@ -38,7 +32,15 @@ TechMart is a production-style e-commerce data engineering portfolio project des
 2. Create the MySQL schema:
    mysql < database/schema.sql
 3. Generate synthetic datasets:
-   python3 generator/main.py
+   python3 -m generator.main
+
+## Scaling the generator
+
+Update values in generator/config.py to increase or decrease data volume.
+
+## Output
+
+Generated CSV files are written to generator/output/.
 
 ## Roadmap
 

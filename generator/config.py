@@ -1,24 +1,24 @@
+from __future__ import annotations
 
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
-DATASETS_DIR = ROOT_DIR / "datasets"
-RAW_DIR = DATASETS_DIR / "raw"
-CLEANED_DIR = DATASETS_DIR / "cleaned"
+GENERATOR_DIR = ROOT_DIR / "generator"
+OUTPUT_FOLDER = GENERATOR_DIR / "output"
 
-COUNTS = {
-    "addresses": 5000,
-    "customers": 10000,
-    "categories": 20,
-    "brands": 100,
-    "suppliers": 100,
-    "products": 5000,
-    "orders": 100000,
-    "order_items": 300000,
-    "payments": 100000,
-    "reviews": 50000,
-    "returns": 10000,
-    "inventory": 5000,
-}
+SEED = 42
 
+ADDRESS_COUNT = 5000
+CUSTOMER_COUNT = 10000
+BRAND_COUNT = 100
+CATEGORY_COUNT = 20
+SUPPLIER_COUNT = 100
+PRODUCT_COUNT = 5000
+ORDER_COUNT = 100000
 MAX_ITEMS_PER_ORDER = 5
+PAYMENT_COUNT = 100000
+REVIEW_COUNT = 50000
+INVENTORY_COUNT = 5000
+
+START_YEAR = 2021
+END_YEAR = 2026
