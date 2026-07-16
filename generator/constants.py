@@ -1,17 +1,39 @@
 from __future__ import annotations
 
-INDIAN_CITIES = [
-    "Mumbai", "Delhi", "Bengaluru", "Hyderabad", "Chennai", "Kolkata", "Pune",
-    "Jaipur", "Ahmedabad", "Lucknow", "Kanpur", "Nagpur", "Visakhapatnam", "Surat",
-    "Coimbatore", "Indore", "Vadodara", "Bhopal", "Thane", "Agra"
-]
+CITY_STATE_MAP = {
+    "Mumbai": "Maharashtra",
+    "Delhi": "Delhi",
+    "Bengaluru": "Karnataka",
+    "Hyderabad": "Telangana",
+    "Chennai": "Tamil Nadu",
+    "Kolkata": "West Bengal",
+    "Pune": "Maharashtra",
+    "Jaipur": "Rajasthan",
+    "Ahmedabad": "Gujarat",
+    "Lucknow": "Uttar Pradesh",
+    "Kanpur": "Uttar Pradesh",
+    "Nagpur": "Maharashtra",
+    "Visakhapatnam": "Andhra Pradesh",
+    "Surat": "Gujarat",
+    "Coimbatore": "Tamil Nadu",
+    "Indore": "Madhya Pradesh",
+    "Vadodara": "Gujarat",
+    "Bhopal": "Madhya Pradesh",
+    "Thane": "Maharashtra",
+    "Agra": "Uttar Pradesh",
+}
 
-INDIAN_STATES = [
-    "Maharashtra", "Delhi", "Karnataka", "Telangana", "Tamil Nadu", "West Bengal",
-    "Uttar Pradesh", "Rajasthan", "Gujarat", "Madhya Pradesh", "Haryana", "Punjab"
-]
+INDIAN_CITIES = list(CITY_STATE_MAP.keys())
+INDIAN_STATES = list(dict.fromkeys(CITY_STATE_MAP.values()))
 
 COUNTRIES = ["India"]
+
+EMAIL_DOMAINS = {
+    "gmail.com": 0.70,
+    "outlook.com": 0.15,
+    "yahoo.com": 0.10,
+    "icloud.com": 0.05,
+}
 
 GENDER_VALUES = ["Male", "Female", "Other", "Prefer not to say"]
 CUSTOMER_STATUS_VALUES = ["Active", "Inactive", "Suspended"]

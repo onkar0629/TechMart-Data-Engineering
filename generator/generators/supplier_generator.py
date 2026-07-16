@@ -3,39 +3,36 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Dict, List
 
-from faker import Faker
-
-from ..config import SUPPLIER_COUNT
-from ..constants import COUNTRIES, INDIAN_CITIES, INDIAN_STATES
 from ..logger import setup_logger
-from ..utils import ensure_output_dir, generate_mobile_number, write_csv
+from ..models.supplier import Supplier
+from ..services.catalog_service import CatalogService
+from ..utils import ensure_output_dir, write_csv
 
 logger = setup_logger(__name__)
-fake = Faker("en_IN")
 
 
 class SupplierGenerator:
     def __init__(self, output_dir: Path | str | None = None) -> None:
         self.output_dir = ensure_output_dir(output_dir)
+        self._service = CatalogService()
 
-    def generate(self) -> List[Dict[str, Any]]:
+    def generate(self, suppliers: List[Supplier] | None = None, count: int = 0) -> List[Dict[str, Any]]:
         logger.info("Generating suppliers...")
-        rows: List[Dict[str, Any]] = []
-        for index in range(1, SUPPLIER_COUNT + 1):
-            rows.append(
-                {
-                    "supplier_id": index,
-                    "supplier_name": fake.company(),
-                    "contact_person": fake.name(),
-                    "email": fake.email(),
-                    "phone": generate_mobile_number(),
-                    "city": fake.random_element(elements=INDIAN_CITIES),
-                    "state": fake.random_element(elements=INDIAN_STATES),
-                    "country": fake.random_element(elements=COUNTRIES),
-                    "rating": round(fake.random.uniform(3.0, 5.0), 2),
-                }
-            )
-
+        resolved_suppliers = suppliers if suppliers is not None else self._service.generate_suppliers(count=count or 100)
+        rows = [self._to_row(supplier) for supplier in resolved_suppliers]
         write_csv(self.output_dir / "suppliers.csv", rows)
         logger.info("Suppliers generated: %s", len(rows))
         return rows
+
+    def _to_row(self, supplier: Supplier) -> Dict[str, Any]:
+        return {
+            "supplier_id": supplier.supplier_id,
+            "supplier_name": supplier.supplier_name,
+            "contact_person": supplier.contact_person,
+            "email": supplier.email,
+            "phone": supplier.phone,
+            "city": supplier.city,
+            "state": supplier.state,
+            "country": supplier.country,
+            "rating": supplier.rating,
+        }
