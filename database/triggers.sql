@@ -1,0 +1,11 @@
+
+DELIMITER $$
+
+CREATE TRIGGER trg_update_cart_timestamp
+BEFORE UPDATE ON shopping_cart
+FOR EACH ROW
+BEGIN
+    SET NEW.updated_at = CURRENT_TIMESTAMP;
+END$$
+
+DELIMITER ;
