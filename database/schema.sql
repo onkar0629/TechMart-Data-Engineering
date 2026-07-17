@@ -70,22 +70,33 @@ CREATE TABLE suppliers (
 CREATE TABLE products (
     product_id INT AUTO_INCREMENT PRIMARY KEY,
     product_name VARCHAR(250) NOT NULL,
+
     brand_id INT NOT NULL,
     category_id INT NOT NULL,
     supplier_id INT NOT NULL,
+
     sku VARCHAR(100) NOT NULL UNIQUE,
-    description TEXT DEFAULT NULL,
-    price DECIMAL(10,2) NOT NULL,
+
+    description TEXT,
+
     cost_price DECIMAL(10,2) NOT NULL,
-    is_active TINYINT(1) NOT NULL DEFAULT 1,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_products_brand_id FOREIGN KEY (brand_id) REFERENCES brands(brand_id),
-    CONSTRAINT fk_products_category_id FOREIGN KEY (category_id) REFERENCES categories(category_id),
-    CONSTRAINT fk_products_supplier_id FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id),
-    CONSTRAINT chk_products_price CHECK (price > 0),
-    CONSTRAINT chk_products_cost_price CHECK (cost_price > 0),
-    CONSTRAINT chk_products_margin CHECK (cost_price <= price)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    selling_price DECIMAL(10,2) NOT NULL,
+
+    weight_grams INT NOT NULL,
+    warranty_months INT NOT NULL DEFAULT 12,
+
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+
+    popularity INT NOT NULL DEFAULT 0,
+
+    FOREIGN KEY (brand_id) REFERENCES brands(brand_id),
+    FOREIGN KEY (category_id) REFERENCES categories(category_id),
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id),
+
+    CHECK (cost_price > 0),
+    CHECK (selling_price > 0),
+    CHECK (cost_price <= selling_price)
+);
 
 CREATE TABLE warehouses (
     warehouse_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -99,59 +110,152 @@ CREATE TABLE warehouses (
 
 CREATE TABLE inventory (
     inventory_id INT AUTO_INCREMENT PRIMARY KEY,
+
     product_id INT NOT NULL,
+
     warehouse_id INT NOT NULL,
-    stock_quantity INT NOT NULL DEFAULT 0,
+
+    opening_stock INT NOT NULL,
+
+    units_sold INT NOT NULL DEFAULT 0,
+
+    units_returned INT NOT NULL DEFAULT 0,
+
+    current_stock INT NOT NULL,
+
+    stock_quantity INT NOT NULL,
+
     reorder_level INT NOT NULL DEFAULT 0,
+
     last_updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_inventory_product_id FOREIGN KEY (product_id) REFERENCES products(product_id),
-    CONSTRAINT fk_inventory_warehouse_id FOREIGN KEY (warehouse_id) REFERENCES warehouses(warehouse_id),
-    CONSTRAINT chk_inventory_stock_quantity CHECK (stock_quantity >= 0),
-    CONSTRAINT chk_inventory_reorder_level CHECK (reorder_level >= 0)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+    CONSTRAINT uq_inventory_product_warehouse
+        UNIQUE (product_id, warehouse_id),
+
+    FOREIGN KEY (product_id)
+        REFERENCES products(product_id),
+
+    FOREIGN KEY (warehouse_id)
+        REFERENCES warehouses(warehouse_id),
+
+    CHECK (opening_stock >= 0),
+
+    CHECK (units_sold >= 0),
+
+    CHECK (units_returned >= 0),
+
+    CHECK (current_stock >= 0),
+
+    CHECK (stock_quantity >= 0),
+
+    CHECK (reorder_level >= 0)
+);
 
 CREATE TABLE orders (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
+
     customer_id INT NOT NULL,
-    order_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    order_status ENUM('Pending','Packed','Shipped','Delivered','Cancelled','Returned') NOT NULL DEFAULT 'Pending',
-    payment_status ENUM('Pending','Paid','Failed','Refunded') NOT NULL DEFAULT 'Pending',
-    total_amount DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+
+    order_date DATETIME NOT NULL,
+
+    order_status ENUM(
+        'Pending',
+        'Packed',
+        'Shipped',
+        'Delivered',
+        'Cancelled',
+        'Returned'
+    ) NOT NULL,
+
+    payment_status ENUM(
+        'Pending',
+        'Paid',
+        'Failed',
+        'Refunded'
+    ) NOT NULL,
+
+    total_amount DECIMAL(12,2) NOT NULL,
+
     shipping_address_id INT NOT NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_orders_customer_id FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
-    CONSTRAINT fk_orders_shipping_address_id FOREIGN KEY (shipping_address_id) REFERENCES addresses(address_id),
-    CONSTRAINT chk_orders_total_amount CHECK (total_amount >= 0)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+    billing_address_id INT NOT NULL,
+
+    FOREIGN KEY (customer_id)
+        REFERENCES customers(customer_id),
+
+    FOREIGN KEY (shipping_address_id)
+        REFERENCES addresses(address_id),
+
+    FOREIGN KEY (billing_address_id)
+        REFERENCES addresses(address_id),
+
+    CHECK (total_amount >= 0)
+);
 
 CREATE TABLE order_items (
     order_item_id INT AUTO_INCREMENT PRIMARY KEY,
+
     order_id INT NOT NULL,
+
     product_id INT NOT NULL,
+
     quantity INT NOT NULL,
+
     unit_price DECIMAL(10,2) NOT NULL,
-    discount DECIMAL(5,2) NOT NULL DEFAULT 0.00,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_order_items_order_id FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE,
-    CONSTRAINT fk_order_items_product_id FOREIGN KEY (product_id) REFERENCES products(product_id),
-    CONSTRAINT chk_order_items_quantity CHECK (quantity > 0),
-    CONSTRAINT chk_order_items_unit_price CHECK (unit_price >= 0),
-    CONSTRAINT chk_order_items_discount CHECK (discount BETWEEN 0.00 AND 100.00)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+    discount_percentage DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+
+    FOREIGN KEY (order_id)
+        REFERENCES orders(order_id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (product_id)
+        REFERENCES products(product_id),
+
+    CHECK (quantity > 0),
+
+    CHECK (unit_price >= 0),
+
+    CHECK (discount_percentage BETWEEN 0 AND 100)
+);
 
 CREATE TABLE payments (
     payment_id INT AUTO_INCREMENT PRIMARY KEY,
+
     order_id INT NOT NULL,
-    payment_method ENUM('UPI','Credit Card','Debit Card','Wallet','Net Banking','Cash On Delivery') NOT NULL,
-    payment_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    payment_status ENUM('Pending','Success','Failed','Refunded') NOT NULL DEFAULT 'Pending',
-    amount DECIMAL(12,2) NOT NULL,
+
+    payment_method ENUM(
+        'UPI',
+        'Credit Card',
+        'Debit Card',
+        'Wallet',
+        'Net Banking',
+        'Cash On Delivery'
+    ) NOT NULL,
+
+    payment_date DATETIME NOT NULL,
+
+    payment_status ENUM(
+        'Pending',
+        'Success',
+        'Failed',
+        'Refunded'
+    ) NOT NULL,
+
+    payment_amount DECIMAL(12,2) NOT NULL,
+
     transaction_reference VARCHAR(100) NOT NULL UNIQUE,
-    gateway_response VARCHAR(255) DEFAULT NULL,
+
+    gateway_response VARCHAR(255),
+
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_payments_order_id FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE,
-    CONSTRAINT chk_payments_amount CHECK (amount >= 0)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+    FOREIGN KEY (order_id)
+        REFERENCES orders(order_id)
+        ON DELETE CASCADE,
+
+    CHECK (payment_amount >= 0)
+);
 
 CREATE TABLE reviews (
     review_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -248,3 +352,15 @@ CREATE TABLE shopping_cart_items (
     CONSTRAINT chk_shopping_cart_items_quantity CHECK (quantity > 0),
     CONSTRAINT uq_shopping_cart_items_cart_product UNIQUE (cart_id, product_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- ==========================================================
+-- Seed Warehouses (required before importing inventory.csv)
+-- ==========================================================
+INSERT INTO warehouses
+(warehouse_name, city, state, country, capacity_units)
+VALUES
+('Mumbai Warehouse','Mumbai','Maharashtra','India',100000),
+('Pune Warehouse','Pune','Maharashtra','India',80000),
+('Bengaluru Warehouse','Bengaluru','Karnataka','India',120000),
+('Delhi Warehouse','New Delhi','Delhi','India',90000);
