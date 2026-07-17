@@ -1,7 +1,7 @@
 {
   "summary": {
-    "rows_checked": 932644,
-    "passed": 932644,
+    "rows_checked": 932266,
+    "passed": 932266,
     "failed": 0,
     "warnings": 0,
     "errors": 0,
@@ -47,8 +47,8 @@
     },
     {
       "validator": "review",
-      "rows_checked": 79284,
-      "passed": 79284,
+      "rows_checked": 78906,
+      "passed": 78906,
       "failed": 0,
       "warnings": 0,
       "errors": 0,
