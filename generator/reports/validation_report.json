@@ -1,0 +1,69 @@
+{
+  "summary": {
+    "rows_checked": 932644,
+    "passed": 932644,
+    "failed": 0,
+    "warnings": 0,
+    "errors": 0,
+    "overall_status": "Passed"
+  },
+  "failure_breakdown": {},
+  "validators": [
+    {
+      "validator": "customer",
+      "rows_checked": 50000,
+      "passed": 50000,
+      "failed": 0,
+      "warnings": 0,
+      "errors": 0,
+      "overall_status": "Passed"
+    },
+    {
+      "validator": "catalog",
+      "rows_checked": 2400,
+      "passed": 2400,
+      "failed": 0,
+      "warnings": 0,
+      "errors": 0,
+      "overall_status": "Passed"
+    },
+    {
+      "validator": "order",
+      "rows_checked": 400000,
+      "passed": 400000,
+      "failed": 0,
+      "warnings": 0,
+      "errors": 0,
+      "overall_status": "Passed"
+    },
+    {
+      "validator": "payment",
+      "rows_checked": 400000,
+      "passed": 400000,
+      "failed": 0,
+      "warnings": 0,
+      "errors": 0,
+      "overall_status": "Passed"
+    },
+    {
+      "validator": "review",
+      "rows_checked": 79284,
+      "passed": 79284,
+      "failed": 0,
+      "warnings": 0,
+      "errors": 0,
+      "overall_status": "Passed"
+    },
+    {
+      "validator": "inventory",
+      "rows_checked": 960,
+      "passed": 960,
+      "failed": 0,
+      "warnings": 0,
+      "errors": 0,
+      "overall_status": "Passed"
+    }
+  ],
+  "sample_errors_truncated": false,
+  "sample_errors": []
+}

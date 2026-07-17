@@ -93,20 +93,37 @@ class CatalogService:
         category_id_list = list(category_ids or [category.category_id for category in categories])
         brand_id_list = list(brand_ids or [brand.brand_id for brand in brands])
         supplier_id_list = list(supplier_ids or [supplier.supplier_id for supplier in suppliers])
+        categories_by_id = {category.category_id: category for category in categories}
+        brands_by_id = {brand.brand_id: brand for brand in brands}
 
         products: List[Product] = []
         for index in range(1, count + 1):
             category_id = category_id_list[(index - 1) % len(category_id_list)]
             brand_id = brand_id_list[(index - 1) % len(brand_id_list)]
             supplier_id = supplier_id_list[(index - 1) % len(supplier_id_list)]
-            product = self._build_product(index=index, category_id=category_id, brand_id=brand_id, supplier_id=supplier_id)
+            product = self._build_product(
+                index=index,
+                category_id=category_id,
+                brand_id=brand_id,
+                supplier_id=supplier_id,
+                categories_by_id=categories_by_id,
+                brands_by_id=brands_by_id,
+            )
             if product is not None:
                 products.append(product)
         return products
 
-    def _build_product(self, index: int, category_id: int, brand_id: int, supplier_id: int) -> Product | None:
-        category = next((item for item in self.generate_categories() if item.category_id == category_id), None)
-        brand = next((item for item in self.generate_brands() if item.brand_id == brand_id), None)
+    def _build_product(
+        self,
+        index: int,
+        category_id: int,
+        brand_id: int,
+        supplier_id: int,
+        categories_by_id: dict[int, Category],
+        brands_by_id: dict[int, Brand],
+    ) -> Product | None:
+        category = categories_by_id.get(category_id)
+        brand = brands_by_id.get(brand_id)
         if category is None or brand is None:
             return None
 

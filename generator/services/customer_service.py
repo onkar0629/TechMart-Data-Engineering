@@ -11,7 +11,7 @@ from ..config import CUSTOMER_COUNT
 from ..constants import GENDER_VALUES
 from ..logger import setup_logger
 from ..models.customer import Customer
-from ..utils import create_email, create_phone_number, is_valid_age, is_valid_registration_date, random_date_between, random_dob
+from ..utils import create_email, create_phone_number, is_valid_age, is_valid_registration_date, random_date_between
 
 logger = setup_logger(__name__)
 fake = Faker("en_IN")
@@ -49,7 +49,7 @@ class CustomerService:
             last_name = fake.last_name()
             email = create_email(first_name, last_name, self._seen_emails)
             phone = create_phone_number(self._seen_phones)
-            date_of_birth = random_dob(min_age=18, max_age=70)
+            date_of_birth = self._random_dob(min_age=18, max_age=70)
             registration_date = random_date_between(datetime(2021, 1, 1).date(), datetime.now().date())
             address_id = address_ids[(index - 1) % len(address_ids)]
             is_active = fake.random.random() < 0.8
@@ -94,3 +94,15 @@ class CustomerService:
         if not is_valid_registration_date(registration_date):
             return False
         return address_id > 0
+
+    def _random_dob(self, min_age: int, max_age: int) -> date:
+        today = date.today()
+        earliest_birth_date = self._years_before(today, max_age)
+        latest_birth_date = self._years_before(today, min_age)
+        return random_date_between(earliest_birth_date, latest_birth_date)
+
+    def _years_before(self, value: date, years: int) -> date:
+        try:
+            return value.replace(year=value.year - years)
+        except ValueError:
+            return value.replace(year=value.year - years, day=28)
