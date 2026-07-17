@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import random
 import uuid
+import csv
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List
@@ -28,6 +29,15 @@ def write_csv(path: Path, rows: List[Dict[str, Any]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     dataframe = pd.DataFrame(rows)
     dataframe.to_csv(path, index=False)
+
+
+def read_csv_rows(path: Path) -> List[Dict[str, str]]:
+    """Read a CSV file into dictionaries, returning an empty list when absent."""
+    if not path.exists():
+        return []
+
+    with path.open(newline="", encoding="utf-8") as handle:
+        return list(csv.DictReader(handle))
 
 
 def generate_uuid() -> str:
